@@ -1,0 +1,41 @@
+\\正規化設計
+
+會有以下這 6 張表：
+1. `Books`：書的基本資料
+2. `Authors`：作者清單
+3. `BookAuthors`：連接書和作者（因為一本書可以有多個作者）
+4. `Publishers`：出版社名稱與地址
+5. `Members`：會員的個人資料
+6. `BorrowRecords`：誰借了哪本書、什麼時候借、什麼時候還
+
+---
+
+1.Books (ISBN, Title, PublicationYear, Category, PublisherName)
+
+主鍵：ISBN
+
+外鍵：PublisherName → Publishers
+
+2.Authors (AuthorID, Name)
+
+主鍵：AuthorID
+
+3.BookAuthors (ISBN, AuthorID)
+
+主鍵：ISBN + AuthorID（複合主鍵）
+
+多對多關聯：書籍與作者
+
+4.Publishers (Name, Address)
+
+主鍵：Name
+
+5.Members (CardID, Name, Address, Phone, Email)
+
+主鍵：CardID
+
+6.BorrowRecords (RecordID, CardID, ISBN, BorrowDate, DueDate, ReturnDate)
+
+主鍵：RecordID
+
+外鍵：CardID → Members、ISBN → Books

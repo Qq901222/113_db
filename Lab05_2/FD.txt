@@ -1,0 +1,61 @@
+\\分析與正規化
+
+1.從一個包含所有訂單資訊的單一扁平化表格概念開始 (例如，一張包含所有上述欄位的試算表)。
+
+未正規化的資料表格:
+訂單ID | 顧客ID | 顧客姓名 | Email | 電話 | 街道 | 城市 | 郵遞區號 | 國家 | 訂單日期 | 訂單總金額 | 產品ID | 產品名稱 | 數量 | 單價 | 供應商名稱 | 供應商聯絡方式
+---
+異常內容:
+資料重複-同一位顧客在同張訂單買多項商品，顧客與地址資料就會重複出現
+插入異常-新產品還沒被訂購，就無法單獨新增產品資訊
+更新異常-改顧客電話或產品價格時，可能要改多筆資料才能一致
+刪除異常-若刪除某張訂單的最後一筆商品記錄，可能會連同顧客與產品資訊一起刪掉
+
+2.函數相依性（FD）
+
+D1: 顧客ID → 顧客姓名, Email, 電話, 街道, 城市, 郵遞區號, 國家
+FD2: 產品ID → 產品名稱, 產品描述, 單價, 庫存數量, 供應商名稱
+FD3: 供應商名稱 → 供應商聯絡方式
+FD4: 訂單ID → 顧客ID, 訂單日期, 訂單總金額
+FD5: 訂單ID + 產品ID → 數量, 單價（針對這筆訂單買的那個產品的購買數量與價格）
+
+3.將綱要正規化至第三正規化 (3NF)
+
+會有以下這 5 張表：
+Customers：顧客的基本資料
+Suppliers：產品供應商的資訊
+Products：產品詳細資訊（包含供應商）
+Orders：每一張訂單的主資料
+OrderItems：訂單明細，列出每張訂單買了哪些產品、幾個、多少錢
+
+1. Customers (CustomerID, Name, Email, Phone, Street, City, Zip, Country)
+主鍵：CustomerID
+
+一位顧客只能有一筆個人資料
+
+2. Suppliers (SupplierName, Contact)
+主鍵：SupplierName
+
+每個供應商名稱唯一，可查聯絡方式
+
+3. Products (ProductID, Name, Description, UnitPrice, Stock, SupplierName)
+主鍵：ProductID
+
+外鍵：SupplierName → Suppliers
+
+一個產品只能來自一個供應商
+
+4. Orders (OrderID, CustomerID, OrderDate, TotalAmount)
+主鍵：OrderID
+
+外鍵：CustomerID → Customers
+
+記錄一筆訂單是哪位顧客下的、何時下單、總金額
+
+5. OrderItems (OrderID, ProductID, Quantity, UnitPrice)
+主鍵：OrderID + ProductID（複合主鍵）
+
+外鍵：OrderID → Orders、ProductID → Products
+
+記錄一筆訂單中每樣產品買了多少、當時單價是多少
+
